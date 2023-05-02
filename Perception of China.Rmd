@@ -1,7 +1,7 @@
 ---
 title: "Phillipines Perception of China"
-author: "AJ Luna"
-date: "2023-03-03"
+author: " "
+date: " "
 output: html_document
 ---
 ## Background:
