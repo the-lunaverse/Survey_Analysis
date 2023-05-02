@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r, echo=FALSE}
 
-knitr::include_graphics("/Users/Aj/Desktop/Chaminade univeristy/DSAV Program/4. Spring Semester 2023/DS 404 Geotagging and GIS /DS 404 Geotagging and GIS/south_china_sea.png")
+knitr::include_graphics("INPUT YOUR GRAPHIC OF YOUR OWN VIZ")
 
 ```
 
@@ -52,35 +52,8 @@ folder_path <- "csv_data"
 ```
 
 
-```{r, include= FALSE, warning=FALSE, message=FALSE}
-
-# Get a list of all CSV files in the folder
-csv_files <- list.files(paste0(folder_path, "/"), pattern = "\\.csv$")
-
-print(csv_files)
-
-```
-
-
-
-```{r, include=FALSE, warning=FALSE, message=FALSE}
-
-# Loop through the CSV files and read each one into a data frame
-for (file_name in csv_files) {
-  file_path <- paste0(folder_path, "/", file_name)
-  
-  # Read CSV file with options to handle null values and incomplete final lines
-  df <- read.csv(file_path, na.strings = c("", "NA", "NULL", "N/A"), fill = TRUE, comment.char = "", header = TRUE, stringsAsFactors = FALSE, skipNul = TRUE)
-  
-  # Do something with the data frame, such as print its contents
-  print(df)
-}
-
-```
-
-
 ```{r, include=FALSE}
-Perception_of_China <- read.csv("/Users/Aj/Desktop/Chaminade univeristy/DSAV Program/4. Spring Semester 2023/DS 405 Advanced R/DS 405 Advanced R/csv_data/Perception of China-4951597028212736.csv")
+Perception_of_China <- read.csv("PATH TO YOUR OWN DATA ON YOUR LOCAL MACHINE")
 View(Perception_of_China)
 
 ```
