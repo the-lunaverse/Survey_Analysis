@@ -44,14 +44,6 @@ library(plotly)
 ```
 
 
-
-```{r, include= FALSE, warning=FALSE, message=FALSE}
-# Specify the folder path containing the CSV files
-folder_path <- "csv_data"
-
-```
-
-
 ```{r, include=FALSE}
 Perception_of_China <- read.csv("PATH TO YOUR OWN DATA ON YOUR LOCAL MACHINE")
 View(Perception_of_China)
@@ -61,8 +53,8 @@ View(Perception_of_China)
  
 
 
-
 ##### I transformed the survey responses to the question,  "What is your overall perception of China?" into numerical values so I can quantify and measure the particpants responses.  
+
 ```{r}
 
 
