@@ -1,0 +1,267 @@
+---
+title: "Phillipines Perception of China"
+author: "AJ Luna"
+date: "2023-03-03"
+output: html_document
+---
+## Background:
+
+### Why is the Phillipines important to China?
+
+
+##### The Philippines is situated in the South China Sea and is part of the broader Asia-Pacific region, which has become a focal point for global trade and geopolitics. Its location near major shipping routes makes it strategically important for China
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+##### China and the Philippines have overlapping territorial claims in the South China Sea, particularly around the Spratly Islands and Scarborough Shoal. China's assertiveness in the region has led to increased tensions between the two countries. Securing these territories is important for China's strategic interests, as well as for potential resources, such as oil and gas reserves, in the disputed areas.
+
+
+```{r, echo=FALSE}
+
+knitr::include_graphics("/Users/Aj/Desktop/Chaminade univeristy/DSAV Program/4. Spring Semester 2023/DS 404 Geotagging and GIS /DS 404 Geotagging and GIS/south_china_sea.png")
+
+```
+
+
+##### Additionally, China has been investing in the Philippines' infrastructure development, telecommunications, and other sectors as part of its broader Belt and Road Initiative (BRI). These investments can help strengthen China's influence in the region and is a way China inflitrates host nations economic infrastructure.
+
+
+## Goal:
+
+
+##### This project is concentrated on the survey data collected in the Phillipines and getting a better understanding on the particpants overall perception of China.
+
+
+
+```{r, include= TRUE, warning=FALSE, message=FALSE}
+
+library(dplyr)
+library(ggplot2)
+library(plotly)
+
+```
+
+
+
+```{r, include= FALSE, warning=FALSE, message=FALSE}
+# Specify the folder path containing the CSV files
+folder_path <- "csv_data"
+
+```
+
+
+```{r, include= FALSE, warning=FALSE, message=FALSE}
+
+# Get a list of all CSV files in the folder
+csv_files <- list.files(paste0(folder_path, "/"), pattern = "\\.csv$")
+
+print(csv_files)
+
+```
+
+
+
+```{r, include=FALSE, warning=FALSE, message=FALSE}
+
+# Loop through the CSV files and read each one into a data frame
+for (file_name in csv_files) {
+  file_path <- paste0(folder_path, "/", file_name)
+  
+  # Read CSV file with options to handle null values and incomplete final lines
+  df <- read.csv(file_path, na.strings = c("", "NA", "NULL", "N/A"), fill = TRUE, comment.char = "", header = TRUE, stringsAsFactors = FALSE, skipNul = TRUE)
+  
+  # Do something with the data frame, such as print its contents
+  print(df)
+}
+
+```
+
+
+```{r, include=FALSE}
+Perception_of_China <- read.csv("/Users/Aj/Desktop/Chaminade univeristy/DSAV Program/4. Spring Semester 2023/DS 405 Advanced R/DS 405 Advanced R/csv_data/Perception of China-4951597028212736.csv")
+View(Perception_of_China)
+
+```
+
+ 
+
+
+
+##### I transformed the survey responses to the question,  "What is your overall perception of China?" into numerical values so I can quantify and measure the particpants responses.  
+```{r}
+
+
+# Create a frequency table of the data
+freq_table <- table(Perception_of_China$what_is_your_overall_perception_of_china)
+
+# Convert the frequency table to a data frame
+freq_df <- data.frame(value = as.character(names(freq_table)), count = as.numeric(freq_table))
+
+
+```
+
+
+##### Now I want to visualize the responses with some interactivity, so ploty graph seemed appropiate. 
+```{r}
+
+# Create a Plotly bar chart
+plot_ly( x = freq_df$value, y = freq_df$count, type = "bar") %>%
+  layout(
+    title = "Overall Perception of China",
+    xaxis = list(title = "Response"),
+    yaxis = list(title = "Count")
+  )
+
+```
+
+##### After exploring these results, I noticed that the majority of survey particpants had a perception of "Neutrality" but oddly enough there is a good portion of particpants that share a perception of "Supportive" compared to "Opposed". 
+
+
+
+##### After comprehending the responses as a whole, I wanted to  see if a trend existed when the surveys were isolated by their respective "Campaign Name." There was 6 different campaigns that conducted this survey with a number of participants ranging from 15 - 1,500.
+
+```{r}
+
+# Group by 'campaign_name'
+grouped_data <- Perception_of_China %>%
+  group_by(campaign_name) %>%
+  count(what_is_your_overall_perception_of_china)
+
+
+```
+
+
+
+```{r,warning=FALSE, message=FALSE}
+
+# Create bar plot with facet wrap
+ggplot(grouped_data, aes(x = what_is_your_overall_perception_of_china, y = n, fill = what_is_your_overall_perception_of_china)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~ campaign_name, scales = "free_y", ncol = 3) +
+  labs(x = "Overall Perception of China", y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        strip.text = element_text(size = 04, face = "bold", color = "black", lineheight = 0.2)) 
+
+
+
+```
+
+
+
+
+##### While understanding the above and having some knowledge about the current climate between the Phillipines and China, I wanted to investigate if there was a trend between the response and location of the survey.
+
+
+
+```{r, warning=FALSE, message=FALSE}
+
+# Load required libraries
+library(sf)
+library(leaflet)
+```
+
+
+```{r,warning=FALSE, message=FALSE}
+
+#Subset the latitude and longitude coordinates from the survey data
+
+location_data <- Perception_of_China %>% select(user_id,lat, lon)
+
+#Remove NA Values  with missing lat or long values
+location_data <- location_data %>%
+  filter(!is.na(lat) & !is.na(lon))
+
+
+```
+
+
+##### The  majority of the survey responses are in the Phillipines but there are some outliers in other locations such as the US, Middle East, Europe, Australia, and a few others. 
+
+
+```{r,warning=FALSE, message=FALSE}
+#Create leaflet map based off user ID
+leaflet(location_data) %>%
+  addProviderTiles(providers$OpenStreetMap) %>%
+  addCircleMarkers(
+    lat = ~lat,
+    lng = ~lon,
+    stroke = FALSE,
+    fillOpacity = 0.8,
+    label = ~as.character(user_id)
+  )
+
+
+
+
+```
+
+
+
+##### Now lets dissect perception response and geolocation. 
+
+
+
+```{r,warning=FALSE, message=FALSE}
+# Define a color function to set different colors for different perception levels
+color_perception <- function(perception) {
+  case_when(
+    perception == "neutral" ~ "gray",
+    perception == "oppopsed" ~ "orange",
+    perception == "supportive" ~ "lightgreen",
+    perception == "very_oppopsed" ~ "darkred",
+    perception == "very_supportive" ~ "skyblue"
+  )
+}
+
+
+```
+
+
+
+```{r,warning=FALSE, message=FALSE}
+
+# Create the leaflet map
+leaflet_map <- leaflet(Perception_of_China) %>%
+  addTiles() %>%
+  addCircleMarkers(
+    ~lon,
+    ~lat,
+    radius = 8,
+    color = ~color_perception(what_is_your_overall_perception_of_china),
+    stroke = FALSE,
+    fillOpacity = 0.8,
+    label = ~paste("User:", user_id, "<br>Perception of China:", what_is_your_overall_perception_of_china)
+  ) %>%
+  addLegend(
+    position = "bottomright", # Set legend position
+    colors = c("grey", "orange", "lightgreen", "darkred", "skyblue"), # Set the colors used in the legend
+    labels = c("neutral", "oppopsed", "supportive", "very_oppopsed", "very_supportive"), # Set the labels for the legend
+    title = "Perception of China", # Set the title for the legend
+    opacity = 1 # Set the opacity of the legend
+  )
+
+# Display the map
+leaflet_map
+
+
+
+
+```
+
+
+## Discussion:
+
+
+##### This analysis investigated the overall perception of China among survey participants in the Phillipines. The dataset used in this study contains various variables, such as the participants' user ID, location coordinates, and their overall perception of China, among others. The perception levels were categorized as neutral, opposed, supportive, very opposed, and very supportive.
+
+##### The overall trend was that there was a neutral overall perception of China. Additionally there was a larger supportive overall perception compared to opposed. 
+
+
+
+# Adios! 
+
+
+
